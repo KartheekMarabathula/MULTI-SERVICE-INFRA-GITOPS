@@ -99,6 +99,13 @@ jobs:
             echo "ENV_NAME=dev" >> $GITHUB_ENV
           fi
 
+      - name: Debug GitHub Context
+        run: |
+          echo "Repository = ${{ github.repository }}"
+          echo "Ref = ${{ github.ref }}"
+          echo "Ref Name = ${{ github.ref_name }}"
+          echo "Event = ${{ github.event_name }}"
+
       - name: Configure AWS Credentials via OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -118,12 +125,12 @@ jobs:
       #injects the database password secret dynamically into the values-dev.yaml (or test/stage) file before running terraform apply. This avoids hardcoding secrets in the repo and prevents warnings about using secrets directly in the workflow.
       - name: Inject Database Password Secret Dynamically
         env:
-          ENV_NAME: ${{ steps.select-env.outputs.ENV_NAME }}
-          SECRET_PASS: ${{ secrets.DEV_DB_PASSWORD }}
+         SECRET_PASS: ${{ secrets.DEV_DB_PASSWORD }}
+
         run: |
-          cd gitops/helm-charts/umbrella-app
-          
-          yq -i ".appConfig.dbPassword = \"$SECRET_PASS\"" values-${ENV_NAME}.yaml
+              cd gitops/helm-charts/umbrella-app
+
+              yq -i '.appConfig.dbPassword = strenv(SECRET_PASS)' values-${ENV_NAME}.yaml
 
       - name: Terraform Init & Apply
         run: |
