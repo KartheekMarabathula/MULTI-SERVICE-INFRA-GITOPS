@@ -1,0 +1,22 @@
+global:
+  domainName: "test.org.internal"
+  awsRegion: "ap-south-1"
+
+appConfig:
+  dbHost: "mysql"
+  dbName: "usersdb_test"      # టెస్ట్ కోసం విడిగా డేటాబేస్ పేరు
+  mysqlDatabase: "usersdb_test"
+  dbUser: "test_user"
+  dbPassword: "DB_PASSWORD_PLACEHOLDER"
+
+product-service:
+  replicaCount: 1             # టెస్టింగ్ లో 1 పోడ్ చాలు
+  image:
+    repository: "821135789828.dkr.ecr.ap-south-1.amazonaws.com"
+    tag: "latest"
+
+user-service:
+  replicaCount: 1
+  image:
+    repository: "821135789828.dkr.ecr.ap-south-1.amazonaws.com"
+    tag: "newest-build"

@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+  namespace: {{ .Release.Namespace }} #Dynamically set the namespace based on the Helm release
+spec:
+  replicas: {{ .Values.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+      - name: user-service
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}" # Dynamically set the image based on the Helm values
+        ports:
+          - containerPort: 3000
+        env:
+          - name: DB_HOST
+            value: "mysql"
+          - name: DB_NAME
+            value: "usersdb"
+          - name: DB_USER
+            value: "root"
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mysql-secret
+                key: MYSQL_ROOT_PASSWORD

@@ -1,0 +1,22 @@
+global:
+  domainName: "stage.org.internal"
+  awsRegion: "ap-south-1"
+
+appConfig:
+  dbHost: "mysql"
+  dbName: "usersdb_stage"     # databse for staging
+  mysqlDatabase: "usersdb_stage"
+  dbUser: "stage_admin"
+  dbPassword: "DB_PASSWORD_PLACEHOLDER" 
+
+product-service:
+  replicaCount: 2           
+  image:
+    repository: "821135789828.dkr.ecr.ap-south-1.amazonaws.com"
+    tag: "latest"
+
+user-service:
+  replicaCount: 2             
+  image:
+    repository: "821135789828.dkr.ecr.ap-south-1.amazonaws.com"
+    tag: "newest-build"

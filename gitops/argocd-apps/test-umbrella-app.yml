@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: test-umbrella-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/KartheekMarabathula/MULTI-SERVICE-INFRA-GITOPS' 
+    targetRevision: HEAD
+    path: gitops/helm-charts/umbrella-app
+    helm:
+      valueFiles:
+        - values-test.yaml 
+  destination:
+    server: 'https://default.svc'
+    namespace: test 
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

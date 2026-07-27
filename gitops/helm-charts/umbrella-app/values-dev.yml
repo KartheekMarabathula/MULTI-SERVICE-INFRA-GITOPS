@@ -1,0 +1,25 @@
+global:
+  domainName: "dev.org.internal"
+  awsRegion: "ap-south-1" 
+
+# These values are automatically injected into the Helm chart templates and can be used to configure the application.
+appConfig:
+  dbHost: "mysql"
+  dbName: "usersdb"
+  mysqlDatabase: "usersdb"
+  dbUser: "root"
+  dbPassword: "DB_PASSWORD_PLACEHOLDER"
+
+# --- PRODUCT SERVICE CONFIG ---
+product-service:
+  replicaCount: 1
+  image:
+    repository: "821135789828.dkr.ecr.ap-south-1.amazonaws.com" # ap-south-1 ECR URL
+    tag: "latest"
+
+# --- USER SERVICE CONFIG ---
+user-service:
+  replicaCount: 1
+  image:
+    repository: "821135789828.dkr.ecr.ap-south-1.amazonaws.com"
+    tag: "newest-build"

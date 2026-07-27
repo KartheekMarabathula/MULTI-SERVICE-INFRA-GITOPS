@@ -1,0 +1,86 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: {{ .Release.Namespace }}
+data:
+  DB_HOST: {{ .Values.appConfig.dbHost | quote }}
+  DB_NAME: {{ .Values.appConfig.dbName | quote }}
+  MYSQL_DATABASE: {{ .Values.appConfig.mysqlDatabase | quote }}
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysql-secret
+  namespace: {{ .Release.Namespace }}
+type: Opaque
+stringData:
+  DB_USER: {{ .Values.appConfig.dbUser | quote }}
+  DB_PASSWORD: {{ .Values.appConfig.dbPassword | quote }}
+  MYSQL_ROOT_PASSWORD: {{ .Values.appConfig.dbPassword | quote }}
+---
+# 3. PersistentVolumeClaim
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pvc
+  namespace: {{ .Release.Namespace }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: "gp2" # EBS storage class for AWS, change as per your cloud provider
+  resources:
+    requests:
+      storage: "1Gi"
+---
+# 4. MySQL Deployment 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:8
+        env:
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mysql-secret
+                key: MYSQL_ROOT_PASSWORD
+          - name: MYSQL_DATABASE
+            valueFrom:
+              configMapKeyRef:
+                name: app-config
+                key: MYSQL_DATABASE
+        ports:
+          - containerPort: 3306
+        volumeMounts:
+          - mountPath: /var/lib/mysql
+            name: mysql-storage
+      volumes:
+        - name: mysql-storage
+          persistentVolumeClaim:
+            claimName: mysql-pvc
+---
+# 5. MySQL Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    app: mysql
+  ports:
+    - port: 3306

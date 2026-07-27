@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: stage-umbrella-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/KartheekMarabathula/MULTI-SERVICE-INFRA-GITOPS' 
+    targetRevision: HEAD
+    path: gitops/helm-charts/umbrella-app
+    helm:
+      valueFiles:
+        - values-stage.yaml # only stage values should be loaded
+  destination:
+    server: 'https://default.svc'
+    namespace: stage 
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

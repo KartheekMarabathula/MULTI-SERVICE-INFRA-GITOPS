@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: dev-umbrella-app
+  namespace: argocd 
+spec:
+  project: default
+  source:
+   
+    repoURL: 'https://github.com/KartheekMarabathula/MULTI-SERVICE-INFRA-GITOPS' 
+    targetRevision: HEAD
+    path: gitops/helm-charts/umbrella-app # Folder which is having umbrella-app helm chart
+    helm:
+      valueFiles:
+        - values-dev.yaml # Folder which is having umbrella-app helm chart
+  destination:
+    server: 'https://default.svc' # Local EKS cluster
+    namespace: dev # 'dev' is the Kubernetes namespace where the application will be deployed
+  syncPolicy:
+    automated:
+      prune: true     # If a file is deleted in Git, it will also be deleted in the cluster
+      selfHeal: true  # If changes are made to the cluster, they will be reverted to match the Git state
+    syncOptions:
+      - CreateNamespace=true # Create the 'dev' namespace if it doesn't exist in ArgoCD

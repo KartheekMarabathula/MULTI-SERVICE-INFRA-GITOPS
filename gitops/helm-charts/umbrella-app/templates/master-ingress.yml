@@ -1,0 +1,36 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: org-master-ingress
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    # Links domains to the only one load balancer created by the ingress controller. This is required for external-dns to work properly.
+    external-dns.alpha.kubernetes.io/hostname: "user.{{ .Values.global.domainName }}, product.{{ .Values.global.domainName }}"
+spec:
+  rules:
+    # 1. USER SERVICE ROUTE
+    - host: "user.{{ .Values.global.domainName }}"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: dev-umbrella-app-user-service
+                port:
+                  number: 80
+
+    # 2. PRODUCT SERVICE ROUTE 
+    - host: "product.{{ .Values.global.domainName }}"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: dev-umbrella-app-product-service
+                port:
+                  number: 80
