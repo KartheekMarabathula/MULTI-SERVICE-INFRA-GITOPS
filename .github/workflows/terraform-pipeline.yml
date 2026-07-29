@@ -112,6 +112,19 @@ jobs:
           echo "Ref Name = ${{ github.ref_name }}"
           echo "Event = ${{ github.event_name }}"
 
+      - name: Print OIDC Claims
+        uses: actions/github-script@v7
+        with:
+          script: |
+              const core = require('@actions/core');
+
+              const token = await core.getIDToken('sts.amazonaws.com');
+              const payload = JSON.parse(
+              Buffer.from(token.split('.')[1], 'base64').toString()
+              );
+
+              console.log(JSON.stringify(payload, null, 2));
+
       - name: Configure AWS Credentials via OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
