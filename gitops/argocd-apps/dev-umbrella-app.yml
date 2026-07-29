@@ -12,7 +12,7 @@ spec:
     path: gitops/helm-charts/umbrella-app # Folder which is having umbrella-app helm chart
     helm:
       valueFiles:
-        - values-dev.yaml # Folder which is having umbrella-app helm chart
+        - values-dev.yml # Folder which is having umbrella-app helm chart
   destination:
     server: 'https://default.svc' # Local EKS cluster
     namespace: dev # 'dev' is the Kubernetes namespace where the application will be deployed

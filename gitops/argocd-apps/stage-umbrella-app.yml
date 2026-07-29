@@ -11,7 +11,7 @@ spec:
     path: gitops/helm-charts/umbrella-app
     helm:
       valueFiles:
-        - values-stage.yaml # only stage values should be loaded
+        - values-stage.yml # only stage values should be loaded
   destination:
     server: 'https://default.svc'
     namespace: stage 

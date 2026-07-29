@@ -11,7 +11,7 @@ spec:
     path: gitops/helm-charts/umbrella-app
     helm:
       valueFiles:
-        - values-test.yaml 
+        - values-test.yml 
   destination:
     server: 'https://default.svc'
     namespace: test 
