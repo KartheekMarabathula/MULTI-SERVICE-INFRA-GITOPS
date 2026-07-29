@@ -141,15 +141,15 @@ jobs:
           sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/local/bin/yq
           sudo chmod +x /usr/local/bin/yq
 
-      #injects the database password secret dynamically into the values-dev.yaml (or test/stage) file before running terraform apply. This avoids hardcoding secrets in the repo and prevents warnings about using secrets directly in the workflow.
-      #- name: Inject Database Password Secret Dynamically
-       # env:
-         # ENV_NAME: ${{ steps.select-env.outputs.ENV_NAME }}
-         # SECRET_PASS: ${{ secrets.DEV_DB_PASSWORD }}
-        #run: |
-         # cd gitops/helm-charts/umbrella-app
+     # injects the database password secret dynamically into the values-dev.yaml (or test/stage) file before running terraform apply. This avoids hardcoding secrets in the repo and prevents warnings about using secrets directly in the workflow.
+      - name: Inject Database Password Secret Dynamically
+        env:
+          ENV_NAME: ${{ steps.select-env.outputs.ENV_NAME }}
+          SECRET_PASS: ${{ secrets.DEV_DB_PASSWORD }}
+        run: |
+         cd gitops/helm-charts/umbrella-app
 
-         # yq -i '.appConfig.dbPassword = strenv(SECRET_PASS)' values-${ENV_NAME}.yaml
+          yq -i '.appConfig.dbPassword = strenv(SECRET_PASS)' values-${ENV_NAME}.yml
 
       - name: Debug Helm Chart
         env:
