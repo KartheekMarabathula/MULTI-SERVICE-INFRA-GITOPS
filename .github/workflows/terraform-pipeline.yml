@@ -142,14 +142,42 @@ jobs:
           sudo chmod +x /usr/local/bin/yq
 
       #injects the database password secret dynamically into the values-dev.yaml (or test/stage) file before running terraform apply. This avoids hardcoding secrets in the repo and prevents warnings about using secrets directly in the workflow.
-      - name: Inject Database Password Secret Dynamically
-        env:
-          ENV_NAME: ${{ steps.select-env.outputs.ENV_NAME }}
-          SECRET_PASS: ${{ secrets.DEV_DB_PASSWORD }}
-        run: |
-          cd gitops/helm-charts/umbrella-app
+      #- name: Inject Database Password Secret Dynamically
+       # env:
+         # ENV_NAME: ${{ steps.select-env.outputs.ENV_NAME }}
+         # SECRET_PASS: ${{ secrets.DEV_DB_PASSWORD }}
+        #run: |
+         # cd gitops/helm-charts/umbrella-app
 
-          yq -i '.appConfig.dbPassword = strenv(SECRET_PASS)' values-${ENV_NAME}.yaml
+         # yq -i '.appConfig.dbPassword = strenv(SECRET_PASS)' values-${ENV_NAME}.yaml
+
+      - name: Debug Helm Chart
+        env:
+         ENV_NAME: ${{ steps.select-env.outputs.ENV_NAME }}
+         SECRET_PASS: ${{ secrets.DEV_DB_PASSWORD_PLACEHOLDER }}
+        run: |
+            echo "Current directory:"
+              pwd
+
+            echo "Repository root:"
+              ls -la
+
+            echo "Gitops:"
+              ls -la gitops
+
+            echo "Helm charts:"
+              ls -la gitops/helm-charts
+
+            echo "Umbrella app:"
+              ls -la gitops/helm-charts/umbrella-app
+
+            cd gitops/helm-charts/umbrella-app
+
+              pwd
+
+              ls -la
+
+            echo "ENV_NAME=$ENV_NAME"
 
       - name: Terraform Init & Apply
         run: |
